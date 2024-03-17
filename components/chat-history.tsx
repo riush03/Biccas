@@ -1,3 +1,4 @@
+"use client"
 import * as React from 'react'
 
 import Link from 'next/link'
@@ -18,7 +19,7 @@ interface ChatBoxProps {
   selected: boolean;
 }
 
-export async function ChatHistory({ userId }: ChatHistoryProps) {
+export  function ChatHistory({ userId }: ChatHistoryProps) {
   const create = useMutation(api.chats.create);
 
   const handleAdd = () => {

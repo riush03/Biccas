@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'sonner'
-
+import { Doc } from "@/convex/_generated/dataModel"
 import { ServerActionResult, type Chat } from '@/lib/types'
 import {
   AlertDialog,
@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/tooltip'
 
 interface SidebarActionsProps {
-  chat: Chat
+  chat: Doc<"chats">
 }
 
 export function SidebarActions({

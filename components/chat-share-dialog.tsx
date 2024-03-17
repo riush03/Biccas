@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { toast } from 'sonner'
-
+import { Doc } from "@/convex/_generated/dataModel"
 import { ServerActionResult, type Chat } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,7 +18,7 @@ import { IconSpinner } from '@/components/ui/icons'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 
 interface ChatShareDialogProps extends DialogProps {
-  chat: Pick<Chat, 'id' | 'title' | 'messages'>
+  chat: Pick<Doc<"chats">,"_id" | "title">
   onCopy: () => void
 }
 
@@ -57,7 +57,7 @@ export function ChatShareDialog({
         <div className="p-4 space-y-1 text-sm border rounded-md">
           <div className="font-medium">{chat.title}</div>
           <div className="text-muted-foreground">
-            {chat.messages.length} messages
+            {chat._id} messages
           </div>
         </div>
         <DialogFooter className="items-center">

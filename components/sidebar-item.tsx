@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { motion } from 'framer-motion'
-
+import { Doc } from "@/convex/_generated/dataModel"
 import { buttonVariants } from '@/components/ui/button'
 import { IconMessage, IconUsers } from '@/components/ui/icons'
 import {
@@ -19,16 +19,15 @@ import { cn } from '@/lib/utils'
 
 interface SidebarItemProps {
   index: number
-  chat: Chat
+  chat: Doc<"chats">;
   children: React.ReactNode
 }
 
 export function SidebarItem({ index, chat, children }: SidebarItemProps) {
   const pathname = usePathname()
 
-  const isActive = pathname === chat.path
 
-  if (!chat?.id) return null
+  if (!chat?._id) return null
 
   return (
     <motion.div
@@ -50,7 +49,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
       }}
     >
       <div className="absolute left-2 top-1 flex size-6 items-center justify-center">
-        {chat.sharePath ? (
+        {chat ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
               tabIndex={-1}
@@ -65,11 +64,10 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         )}
       </div>
       <Link
-        href={chat.path}
+        href={""}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
-          isActive && 'bg-zinc-200 pr-16 font-semibold dark:bg-zinc-800'
+          'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10'
         )}
       >
         <div
@@ -108,7 +106,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
           </span>
         </div>
       </Link>
-      {isActive && <div className="absolute right-2 top-1">{children}</div>}
+      
     </motion.div>
   )
 }
