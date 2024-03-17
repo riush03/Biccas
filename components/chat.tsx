@@ -6,15 +6,16 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useEffect, useState } from 'react'
+import { Doc,Id } from '@/convex/_generated/dataModel'
 import { Session } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
-  id?: string
+   chatId: Id<"chats">;
 }
 
-export function Chat({ id, className }: ChatProps) {
+export function Chat({ chatId, className }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   const [input, setInput] = useState('')
@@ -32,7 +33,7 @@ export function Chat({ id, className }: ChatProps) {
           </>
        
       </div>
-      <ChatPanel id={id} input={input} setInput={setInput} />
+      <ChatPanel chatId={chatId} input={input} setInput={setInput} />
     </>
   )
 }

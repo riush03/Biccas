@@ -1,6 +1,4 @@
 import Image from "next/image";
-import SideNav from "@/components/Siderbar";
-import Header from "@/components/Navbar";
 import NavBar from "@/components/common/NavBar";
 import HeroSection from "@/components/landing/Hero";
 import OurFeatureSection from "@/components/landing/Features";

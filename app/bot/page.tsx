@@ -1,23 +1,33 @@
+"use client";
+
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { nanoid } from '@/lib/utils'
 import { redirect } from "next/navigation";
 import { Chat } from '@/components/chat'
 import { auth, clerkClient } from "@clerk/nextjs";
 
-export const metadata = {
-  title: 'Biccus AI Chatbot'
+// export const metadata = {
+//   title: 'Biccus AI Chatbot'
+// }
+
+interface ChatPageProps {
+  params: {
+      chatId: Id<"chats">;
+  }
 }
 
-export default async function IndexPage() {
-  const { userId } = auth();
+const  IndexPage = ({ params }: ChatPageProps) => {
+ 
   const id = nanoid()
  
-  if (!userId) {
-    redirect("/");
-  }
+ 
 
   return (
     
-      <Chat id={id}  />
+      <Chat chatId={params.chatId}  />
   
   )
 }
+
+export default IndexPage;

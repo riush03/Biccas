@@ -1,22 +1,25 @@
 import * as React from 'react'
-
+import { Doc,Id } from "@/convex/_generated/dataModel"
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconShare } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
+import { api } from "@/convex/_generated/api";
 import { ChatShareDialog } from '@/components/chat-share-dialog'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './stocks/message'
 
 export interface ChatPanelProps {
-  id?: string
-  title?: string
-  input: string
-  setInput: (value: string) => void
+  chatId: Id<"chats">;
+  title?: string;
+  input: string;
+  setInput: (value: string) => void;
 }
 
-export function ChatPanel({ id, title, input, setInput }: ChatPanelProps) {
+export function ChatPanel({ chatId, title, input, setInput }: ChatPanelProps) {
+
+
  
 
   const exampleMessages = [
@@ -82,7 +85,7 @@ export function ChatPanel({ id, title, input, setInput }: ChatPanelProps) {
       
 
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <PromptForm input={input} setInput={setInput} />
+          <PromptForm chatId={chatId} input={input} setInput={setInput} />
           <FooterText className="hidden sm:block" />
         </div>
       </div>
