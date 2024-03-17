@@ -1,15 +1,19 @@
 import { nanoid } from '@/lib/utils'
+import { redirect } from "next/navigation";
 import { Chat } from '@/components/chat'
-import { Session } from '@/lib/types'
+import { auth, clerkClient } from "@clerk/nextjs";
 
 export const metadata = {
-  title: 'Next.js AI Chatbot'
+  title: 'Biccus AI Chatbot'
 }
 
 export default async function IndexPage() {
+  const { userId } = auth();
   const id = nanoid()
  
-
+  if (!userId) {
+    redirect("/");
+  }
 
   return (
     

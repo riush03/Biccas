@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import Textarea from 'react-textarea-autosize'
-
-
+import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel"
 import { UserMessage } from './stocks/message'
 import { Button } from '@/components/ui/button'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'

@@ -1,8 +1,14 @@
 import * as React from 'react'
 import Link from 'next/link'
-
+import {
+  OrganizationSwitcher,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useSession,
+} from "@clerk/nextjs"
 import { cn } from '@/lib/utils'
-import { auth } from '@/auth'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   IconGitHub,
@@ -10,38 +16,25 @@ import {
   IconSeparator,
   IconVercel
 } from '@/components/ui/icons'
-import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
 import { Session } from '@/lib/types'
 
 async function UserOrLogin() {
-  const session = (await auth()) as Session
   return (
+
     <>
-      {session?.user ? (
-        <>
+    
           <SidebarMobile>
-            <ChatHistory userId={session.user.id} />
+            <ChatHistory  />
           </SidebarMobile>
           <SidebarToggle />
-        </>
-      ) : (
-        <Link href="/" rel="nofollow">
-          <IconNextChat className="size-6 mr-2 dark:hidden" inverted />
-          <IconNextChat className="hidden size-6 mr-2 dark:block" />
-        </Link>
-      )}
+        
+ 
       <div className="flex items-center">
         <IconSeparator className="size-6 text-muted-foreground/50" />
-        {session?.user ? (
-          <UserMenu user={session.user} />
-        ) : (
-          <Button variant="link" asChild className="-ml-2">
-            <Link href="/login">Login</Link>
-          </Button>
-        )}
+        
       </div>
     </>
   )
@@ -65,15 +58,10 @@ export function Header() {
           <IconGitHub />
           <span className="hidden ml-2 md:flex">GitHub</span>
         </a>
-        <a
-          href="https://vercel.com/templates/Next.js/nextjs-ai-chatbot"
-          target="_blank"
-          className={cn(buttonVariants())}
-        >
-          <IconVercel className="mr-2" />
-          <span className="hidden sm:block">Deploy to Vercel</span>
-          <span className="sm:hidden">Deploy</span>
-        </a>
+        <div className="flex gap-2 ">
+          <UserButton />
+          
+        </div>
       </div>
     </header>
   )

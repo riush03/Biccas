@@ -1,7 +1,9 @@
 import * as React from 'react'
 
 import Link from 'next/link'
-
+import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel"
+import { useMutation } from "convex/react";
 import { cn } from '@/lib/utils'
 import { SidebarList } from '@/components/sidebar-list'
 import { buttonVariants } from '@/components/ui/button'
@@ -11,7 +13,18 @@ interface ChatHistoryProps {
   userId?: string
 }
 
+interface ChatBoxProps {
+  chat: Doc<"chats">;
+  selected: boolean;
+}
+
 export async function ChatHistory({ userId }: ChatHistoryProps) {
+  const create = useMutation(api.chats.create);
+
+  const handleAdd = () => {
+    create({});
+   }
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4">
@@ -19,11 +32,12 @@ export async function ChatHistory({ userId }: ChatHistoryProps) {
       </div>
       <div className="mb-2 px-2">
         <Link
-          href="/"
+          href="/bot"
           className={cn(
             buttonVariants({ variant: 'outline' }),
             'h-10 w-full justify-start bg-zinc-50 px-4 shadow-none transition-colors hover:bg-zinc-200/40 dark:bg-zinc-900 dark:hover:bg-zinc-300/10'
           )}
+          onClick={handleAdd}
         >
           <IconPlus className="-translate-x-2 stroke-2" />
           New Chat

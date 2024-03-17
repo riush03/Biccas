@@ -15,7 +15,7 @@ function NavBar() {
   };
 
   const handleSignupNavigation = () => {
-    router.push("/register");
+    router.push("/bot");
   };
 
   return (
@@ -35,12 +35,7 @@ function NavBar() {
             <div
               className={`hover:text-black cursor-pointer flex items-center gap-2  font-[500] text-customGray`}
             >
-              <Link
-                href="/login"
-                className="hover:text-black cursor-pointer flex items-center gap-2 "
-              >
-                Login
-              </Link>
+             
             </div>
 
             <MainButton text="Sign Up" action={handleSignupNavigation} />
@@ -86,12 +81,7 @@ function NavBar() {
                 <div
                   className={`hover:text-black cursor-pointer flex items-center gap-2  font-[500] text-customGray`}
                 >
-                  <Link
-                    href="/login"
-                    className="hover:text-black cursor-pointer flex items-center gap-2 "
-                  >
-                    Login
-                  </Link>
+                
                 </div>
 
                 <MainButton text="Sign Up" action={handleSignupNavigation} />
