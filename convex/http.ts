@@ -6,29 +6,6 @@ import { httpAction } from "./_generated/server";
 const http = httpRouter();
 
 http.route({
-  path: "/stripe",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    const signature = request.headers.get("stripe-signature") as string;
-
-    const result = await ctx.runAction(internal.stripe.fulfill, {
-      payload: await request.text(),
-      signature,
-    });
-
-    if (result.success) {
-      return new Response(null, {
-        status: 200,
-      });
-    } else {
-      return new Response("Webhook Error", {
-        status: 400,
-      });
-    }
-  }),
-});
-
-http.route({
   path: "/clerk",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
@@ -45,22 +22,38 @@ http.route({
         },
       });
 
-      console.log(result.data);
-
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.users.createUser, {
-            email: result.data.email_addresses[0]?.email_address,
-            userId: result.data.id,
-            name: `${result.data.first_name} ${result.data.last_name}`,
-            profileImage: result.data.image_url,
+            tokenIdentifier: `https://pumped-mustang-40.clerk.accounts.dev |${result.data.id}`,
+            name: `${result.data.first_name ?? ""} ${
+              result.data.last_name ?? ""
+            }`,
+            image: result.data.image_url,
           });
           break;
         case "user.updated":
           await ctx.runMutation(internal.users.updateUser, {
-            userId: result.data.id,
-            profileImage: result.data.image_url,
-            name: `${result.data.first_name} ${result.data.last_name}`,
+            tokenIdentifier: `https://pumped-mustang-40.clerk.accounts.dev |${result.data.id}`,
+            name: `${result.data.first_name ?? ""} ${
+              result.data.last_name ?? ""
+            }`,
+            image: result.data.image_url,
+          });
+          break;
+        case "organizationMembership.created":
+          await ctx.runMutation(internal.users.addOrgIdToUser, {
+            tokenIdentifier: `https://pumped-mustang-40.clerk.accounts.dev |${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
+            role: result.data.role === "org:admin" ? "admin" : "member",
+          });
+          break;
+        case "organizationMembership.updated":
+          console.log(result.data.role);
+          await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
+            tokenIdentifier: `https://pumped-mustang-40.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
+            role: result.data.role === "org:admin" ? "admin" : "member",
           });
           break;
       }
@@ -69,7 +62,6 @@ http.route({
         status: 200,
       });
     } catch (err) {
-      console.error(err);
       return new Response("Webhook Error", {
         status: 400,
       });
