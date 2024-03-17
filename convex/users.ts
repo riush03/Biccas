@@ -1,123 +1,119 @@
-import { ConvexError, v } from "convex/values";
-import {
-  MutationCtx,
-  QueryCtx,
-  internalMutation,
-  query,
-} from "./_generated/server";
-import { roles } from "./schema";
-import { hasAccessToOrg } from "./files";
+import { v } from "convex/values";
+import { internalMutation, mutation, query } from "./_generated/server";
 
-export async function getUser(
-  ctx: QueryCtx | MutationCtx,
-  tokenIdentifier: string
-) {
-  const user = await ctx.db
-    .query("users")
-    .withIndex("by_tokenIdentifier", (q) =>
-      q.eq("tokenIdentifier", tokenIdentifier)
-    )
-    .first();
+export const store = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called storeUser without authenticated user");
+        }
 
-  if (!user) {
-    throw new ConvexError("expected user to be defined");
-  }
+        // check if user is already stored
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.tokenIdentifier))
+            .unique();
 
-  return user;
-}
+        if (user !== null) {
+            const chat = await ctx.db
+                .query("chats")
+                .withIndex("by_userId", (q) =>
+                    q.eq("userId", user._id))
+                .first();
 
-export const createUser = internalMutation({
-  args: { tokenIdentifier: v.string(), name: v.string(), image: v.string() },
-  async handler(ctx, args) {
-    await ctx.db.insert("users", {
-      tokenIdentifier: args.tokenIdentifier,
-      orgIds: [],
-      name: args.name,
-      image: args.image,
-    });
-  },
-});
+            if (chat === null) {
+                const chatId = await ctx.db.insert("chats", {
+                    userId: user._id,
+                    title: "New Chat"
+                });
+                return chatId;
+            }
+            return chat._id;
+        }
 
-export const updateUser = internalMutation({
-  args: { tokenIdentifier: v.string(), name: v.string(), image: v.string() },
-  async handler(ctx, args) {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", args.tokenIdentifier)
-      )
-      .first();
+        const userId = await ctx.db.insert("users", {
+            tokenIdentifier: identity.tokenIdentifier,
+            model: "gpt-3.5-turbo-1106",
+        });
 
-    if (!user) {
-      throw new ConvexError("no user with this token found");
+        const chatId = await ctx.db.insert("chats", {
+            userId,
+            title: "New Chat"
+        });
+
+        return chatId;
     }
-
-    await ctx.db.patch(user._id, {
-      name: args.name,
-      image: args.image,
-    });
-  },
 });
 
-export const addOrgIdToUser = internalMutation({
-  args: { tokenIdentifier: v.string(), orgId: v.string(), role: roles },
-  async handler(ctx, args) {
-    const user = await getUser(ctx, args.tokenIdentifier);
+export const currentUser = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called selectGPT without authenticated user");
+        }
 
-    await ctx.db.patch(user._id, {
-      orgIds: [...user.orgIds, { orgId: args.orgId, role: args.role }],
-    });
-  },
-});
-
-export const updateRoleInOrgForUser = internalMutation({
-  args: { tokenIdentifier: v.string(), orgId: v.string(), role: roles },
-  async handler(ctx, args) {
-    const user = await getUser(ctx, args.tokenIdentifier);
-
-    const org = user.orgIds.find((org) => org.orgId === args.orgId);
-
-    if (!org) {
-      throw new ConvexError(
-        "expected an org on the user but was not found when updating"
-      );
+        return await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.tokenIdentifier))
+            .unique();
     }
+})
 
-    org.role = args.role;
+export const selectGPT = mutation({
+    args: { model: v.union(v.literal("gpt-3.5-turbo-1106"), v.literal("gpt-4-0125-preview")) },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called selectGPT without authenticated user");
+        }
 
-    await ctx.db.patch(user._id, {
-      orgIds: user.orgIds,
-    });
-  },
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.tokenIdentifier))
+            .unique();
+
+        if (user === null) {
+            throw new Error("User not found");
+        }
+
+        await ctx.db.patch(user._id, {
+            model: args.model
+        });
+
+        return user._id;
+    }
 });
 
-export const getUserProfile = query({
-  args: { userId: v.id("users") },
-  async handler(ctx, args) {
-    const user = await ctx.db.get(args.userId);
-
-    return {
-      name: user?.name,
-      image: user?.image,
-    };
-  },
+//update subscription
+export const updateSubscription = internalMutation({
+    args: { subscriptionId: v.string(), userId: v.id("users"), endsOn: v.number() },
+    handler: async (ctx, { subscriptionId, userId, endsOn }) => {
+        await ctx.db.patch(userId, {
+            subscriptionId: subscriptionId,
+            endsOn: endsOn
+        });
+    },
 });
 
-export const getMe = query({
-  args: {},
-  async handler(ctx) {
-    const identity = await ctx.auth.getUserIdentity();
+//update subscription by id
+export const updateSubscriptionById = internalMutation({
+    args: { subscriptionId: v.string(), endsOn: v.number() },
+    handler: async (ctx, { subscriptionId, endsOn }) => {
+        const user = await ctx.db.query("users")
+            .withIndex("by_subscriptionId", (q) => q.eq("subscriptionId", subscriptionId))
+            .unique();
 
-    if (!identity) {
-      return null;
-    }
+        if (!user) {
+            throw new Error("User not found!");
+        }
 
-    const user = await getUser(ctx, identity.tokenIdentifier);
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  },
+        await ctx.db.patch(user._id, {
+            endsOn: endsOn
+        });
+    },
 });

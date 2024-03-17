@@ -14,7 +14,6 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -28,8 +27,6 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
   const pathname = usePathname()
 
   const isActive = pathname === chat.path
-  const [newChatId, setNewChatId] = useLocalStorage('newChatId', null)
-  const shouldAnimate = index === 0 && isActive && newChatId
 
   if (!chat?.id) return null
 
@@ -46,8 +43,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
           opacity: 1
         }
       }}
-      initial={shouldAnimate ? 'initial' : undefined}
-      animate={shouldAnimate ? 'animate' : undefined}
+   
       transition={{
         duration: 0.25,
         ease: 'easeIn'
@@ -81,8 +77,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
           title={chat.title}
         >
           <span className="whitespace-nowrap">
-            {shouldAnimate ? (
-              chat.title.split('').map((character, index) => (
+            
                 <motion.span
                   key={index}
                   variants={{
@@ -95,8 +90,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                       x: 0
                     }
                   }}
-                  initial={shouldAnimate ? 'initial' : undefined}
-                  animate={shouldAnimate ? 'animate' : undefined}
+                 
                   transition={{
                     duration: 0.25,
                     ease: 'easeIn',
@@ -104,17 +98,13 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                     staggerChildren: 0.05
                   }}
                   onAnimationComplete={() => {
-                    if (index === chat.title.length - 1) {
-                      setNewChatId(null)
-                    }
+                  
                   }}
                 >
-                  {character}
+                
                 </motion.span>
-              ))
-            ) : (
-              <span>{chat.title}</span>
-            )}
+        
+           
           </span>
         </div>
       </Link>

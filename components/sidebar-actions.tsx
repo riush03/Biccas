@@ -26,14 +26,11 @@ import {
 
 interface SidebarActionsProps {
   chat: Chat
-  removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (id: string) => ServerActionResult<Chat>
 }
 
 export function SidebarActions({
   chat,
-  removeChat,
-  shareChat
+
 }: SidebarActionsProps) {
   const router = useRouter()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
@@ -73,7 +70,6 @@ export function SidebarActions({
       </div>
       <ChatShareDialog
         chat={chat}
-        shareChat={shareChat}
         open={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
         onCopy={() => setShareDialogOpen(false)}
@@ -97,15 +93,9 @@ export function SidebarActions({
                 event.preventDefault()
                 // @ts-ignore
                 startRemoveTransition(async () => {
-                  const result = await removeChat({
-                    id: chat.id,
-                    path: chat.path
-                  })
+                 
 
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
+                 
 
                   setDeleteDialogOpen(false)
                   router.refresh()
