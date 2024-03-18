@@ -1,30 +1,7 @@
-import { Message } from 'ai'
+export type GPTModel = "gpt-3.5-turbo-1106" | "gpt-4-0125-preview";
 
-export interface Chat extends Record<string, any> {
-  id: string
-  title: string
-  createdAt: Date
-  userId: string
-  path: string
-  messages: Message[]
-  sharePath?: string
-}
-
-export type ServerActionResult<Result> = Promise<
-  | Result
-  | {
-      error: string
-    }
->
-
-export interface Session {
-  user: {
-    id: string
-    email: string
-  }
-}
-
-export interface AuthResult {
-  type: string
-  message: string
-}
+//make it const
+export const GPTModel = {
+    GPT3: "gpt-3.5-turbo-1106",
+    GPT4: "gpt-4-0125-preview"
+} as const;
