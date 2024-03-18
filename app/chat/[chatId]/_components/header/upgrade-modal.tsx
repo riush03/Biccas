@@ -60,7 +60,7 @@ export const UpgradeModal = ({
                     {/* Paid Plan */}
                     <div className="w-1/2 p-4 gap-y-2">
                         <h3 className="text-lg font-semibold">Plus</h3>
-                        <p className="font-thin text-white/95">USD $20/month</p>
+                        <p className="font-thin text-white/95">USD $7/month</p>
                         <Button
                             className="font-semibold text-xs bg-green-600 hover:bg-green-700 p-4 my-4"
                             onClick={handleUpgrade}
