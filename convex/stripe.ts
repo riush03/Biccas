@@ -22,7 +22,7 @@ export const pay = action({
             apiVersion: "2023-10-16"
         });
 
-        const domain = process.env.NEXT_PUBLIC_HOSTING_URL!;
+        const domain = 'https://biccas-six.vercel.app';
 
         const session: Stripe.Response<Stripe.Checkout.Session> = await stripe.checkout.sessions.create(
             {
