@@ -1,8 +1,5 @@
 This is code for the following tutorial:
 
-![ChatGPT Clone](https://i.ytimg.com/vi/_Aeu7BcMoeY/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLBENGf8oDCq4nwdPXo0AFVaAy1DMQ)
-
-[VIDEO TUTORIAL](https://youtu.be/_Aeu7BcMoeY?si=f4c4QoosSys86sOV)
 
 
 If you want to run this I recommend following the tutorial. You can also try the following:
@@ -12,12 +9,12 @@ Node version 14.x
 
 ## Clone this repo
 ```bash
-git clone https://github.com/vukrosic/nextjs14-chatgpt
+git clone https://github.com/riush03/Biccas
 ```
 
 ## Install packages
 ```bash
-cd nextjs14-chatgpt & npm install
+cd Biccas & npm install
 ```
 
 ## Run Convex
