@@ -1,8 +1,4 @@
-This is code for the following tutorial:
-
-
-
-If you want to run this I recommend following the tutorial. You can also try the following:
+This how to run this code.
 
 ## Required:
 Node version 14.x
